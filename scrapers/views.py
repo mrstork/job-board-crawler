@@ -4,6 +4,25 @@ from django.shortcuts import render
 from .models import Company, Position
 import time
 
+def save_or_skip(position_url, position_title, company_name):
+    # do not feel qualified for senior roles yet
+    if 'senior' in position_title.lower():
+        return
+
+    company, created = Company.objects.get_or_create(name__iexact=company_name)
+
+    if company.ignored:
+        return
+
+    Position.objects.create(
+        name=position_title,
+        company=company,
+        url=position_url,
+    )
+
+    print(company_name, '::', position_title)
+
+
 def techvibes():
     pages = 5 # relatively arbitrary
     for page in range(1, pages + 1):
@@ -19,26 +38,24 @@ def techvibes():
             position_title = listing.find('h3').text.strip()
             company_name = listing.find('h5').text.strip()
 
-            # do not feel qualified for senior roles yet
-            if 'senior' in position_title.lower():
-                continue
-
-            company, created = Company.objects.get_or_create(name__iexact=company_name)
-
-            if company.ignored:
-                continue
-
-            Position.objects.create(
-                name=position_title,
-                company=company,
-                url=position_url,
-            )
-
-            print(company_name, '::', position_title)
+            save_or_skip(position_url, position_title, company_name)
 
         # delays for 5 seconds between pages
         time.sleep(5)
 
+
+def stackoverflow():
+    url = 'http://stackoverflow.com/jobs/feed?l=Toronto%2c+ON%2c+Canada&d=19&u=Km'
+    print(url)
+
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'xml')
+
+    for listing in soup.find_all('item'):
+        position_url = listing.find('link').contents[0]
+        position_title = listing.find('title').contents[0]
+        company_name = listing.find('name').contents[0]
+        save_or_skip(position_url, position_title, company_name)
+
 # Future targets
-# http://stackoverflow.com/jobs?sort=i&l=Toronto%2C+ON%2C+Canada&d=20&u=Km
 # https://jobs.github.com/positions?description=&location=Toronto
