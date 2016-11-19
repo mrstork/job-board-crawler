@@ -9,7 +9,7 @@ def save_or_skip(position_url, position_title, company_name):
     if 'senior' in position_title.lower():
         return
 
-    company, created = Company.objects.get_or_create(name__iexact=company_name)
+    company, created = Company.objects.get_or_create(name=company_name)
 
     if company.ignored:
         return
@@ -52,9 +52,9 @@ def stackoverflow():
     soup = BeautifulSoup(response.content, 'xml')
 
     for listing in soup.find_all('item'):
-        position_url = listing.find('link').contents[0]
-        position_title = listing.find('title').contents[0]
-        company_name = listing.find('name').contents[0]
+        position_url = listing.find('link').contents[0].strip()
+        position_title = listing.find('title').contents[0].strip()
+        company_name = listing.find('name').contents[0].strip()
         save_or_skip(position_url, position_title, company_name)
 
 # Future targets
