@@ -23,7 +23,7 @@ def techvibes():
             if 'senior' in position_title.lower():
                 continue
 
-            company, created = Company.objects.get_or_create(name=company_name)
+            company, created = Company.objects.get_or_create(name__iexact=company_name)
 
             if company.ignored:
                 continue
