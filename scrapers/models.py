@@ -11,3 +11,4 @@ class Company(models.Model):
 class Position(models.Model):
     name = models.CharField(max_length=255)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    url = models.CharField(max_length=500)
