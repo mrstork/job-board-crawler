@@ -5,6 +5,6 @@ class Command(BaseCommand):
     help = 'Runs all the job scrapers and populates the database with the results'
 
     def handle(self, *args, **options):
-        # techvibes()
+        techvibes()
         stackoverflow()
         self.stdout.write(self.style.SUCCESS('Success!'))

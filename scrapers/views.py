@@ -24,13 +24,15 @@ def save_or_skip(position_url, position_title, company_name):
 
 
 def techvibes():
-    pages = 5 # relatively arbitrary
-    for page in range(1, pages + 1):
-        url = 'https://jobs.techvibes.com/page/{0}?search_string=development&geo=&location=Toronto&status=&department='.format(page)
-        print(url)
+    page = 1
+    total_pages = -1
 
+    while page != total_pages + 1:
+        url = 'https://jobs.techvibes.com/?status&department=development&location=Toronto&search_string&page={0}'.format(page)
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
+
+        total_pages = len(soup.find('ul', 'pagination').find_all('li', 'number'))
         listings = soup.find('div', 'listings').find_all('div', 'col-sm-6 col-xs-9')
 
         for listing in listings:
@@ -40,9 +42,10 @@ def techvibes():
 
             save_or_skip(position_url, position_title, company_name)
 
+        page = page + 1
+
         # delays for 5 seconds between pages
         time.sleep(5)
-
 
 def stackoverflow():
     url = 'http://stackoverflow.com/jobs/feed?l=Toronto%2c+ON%2c+Canada&d=19&u=Km'
