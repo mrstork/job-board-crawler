@@ -84,7 +84,8 @@ def marsdd():
                 page = page + 1
                 continue
 
-            total_pages = soup.find('ul', 'pagination').find('li', 'inline').text.split(' ')[-1]
+            pagination_element = soup.find('ul', 'pagination').find('li', 'inline')
+            total_pages = pagination_element.text.split(' ')[-1] if pagination_element else 1
             listings = soup.find_all('div', 'page-body page-body--split inline-career')
 
             for listing in listings:
